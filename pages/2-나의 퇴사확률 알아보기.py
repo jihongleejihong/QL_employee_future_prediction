@@ -158,8 +158,8 @@ if st.button("예측하기"):
 
 
     ## showing results
-
-    model_results = pd.concat([Chu_predict(), Lee_predict(), Yoon_predict()]).reset_index(drop = True)
+    # Chu_predict(), 
+    model_results = pd.concat([Lee_predict(), Yoon_predict()]).reset_index(drop = True)
     model_results['Weight']=model_results['Accuracy']/model_results['Accuracy'].sum()
     
     n_models = len(model_results["Algorithm"])
