@@ -1,6 +1,5 @@
 streamlit
 matplotlib
-pyexpat
 pandas
 numpy
 joblib
