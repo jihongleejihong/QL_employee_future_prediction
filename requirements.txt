@@ -3,7 +3,7 @@ matplotlib
 pandas
 numpy
 joblib
-sklearn<=1.0.2
+scikit-learn==1.0.2
 xgboost
 lightgbm 
 plotly
