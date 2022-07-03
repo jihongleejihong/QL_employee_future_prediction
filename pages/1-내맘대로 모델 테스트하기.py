@@ -6,7 +6,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import KNeighborsClassifier
 
 
-
+st.set_page_config(layout="centered")
 
 st.title("MAKE YOUR OWN MACHINE LEARNING MODEL!")
 
