@@ -6,6 +6,5 @@ joblib
 sklearn
 xgboost
 lightgbm 
-os
 plotly
 seaborn
