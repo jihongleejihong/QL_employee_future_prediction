@@ -64,48 +64,68 @@ if st.button("예측하기"):
     ## chu's model
     def Chu_predict():
         
-        X_train, X_test, y_train, y_test= chu.pre_df(df)
+        # X_train, X_test, y_train, y_test= chu.pre_df(df)
 
-        dtc = DecisionTreeClassifier(criterion= 'gini', max_depth= 8, min_samples_leaf= 4, min_samples_split= 2,random_state=42)
+        # dtc = DecisionTreeClassifier(criterion= 'gini', max_depth= 8, min_samples_leaf= 4, min_samples_split= 2,random_state=42)
 
-        lrc = LogisticRegression(random_state=42)
+        # lrc = LogisticRegression(random_state=42)
 
-        rfc = RandomForestClassifier(criterion= 'entropy', max_depth= 8, n_estimators= 500, random_state=42)
+        # rfc = RandomForestClassifier(criterion= 'entropy', max_depth= 8, n_estimators= 500, random_state=42)
 
-        adc = AdaBoostClassifier(learning_rate = 0.001, n_estimators= 180, random_state=42)
+        # adc = AdaBoostClassifier(learning_rate = 0.001, n_estimators= 180, random_state=42)
 
-        etc = ExtraTreesClassifier(criterion= 'gini', n_estimators= 70, random_state=42) 
+        # etc = ExtraTreesClassifier(criterion= 'gini', n_estimators= 70, random_state=42) 
 
-        gbdt = GradientBoostingClassifier(learning_rate= 0.1, loss= 'deviance', max_depth= 3, n_estimators= 150, random_state=42)
+        # gbdt = GradientBoostingClassifier(learning_rate= 0.1, loss= 'deviance', max_depth= 3, n_estimators= 150, random_state=42)
 
-        xgb = XGBClassifier(eval_metric= 'mlogloss', learning_rate= 1, n_estimators= 20, random_state=42) 
+        # xgb = XGBClassifier(eval_metric= 'mlogloss', learning_rate= 1, n_estimators= 20, random_state=42) 
 
-        lgbm= LGBMClassifier(learning_rate= 0.1, max_bin= 100, n_estimators= 50, num_leaves= 10, random_state=42) 
+        # lgbm= LGBMClassifier(learning_rate= 0.1, max_bin= 100, n_estimators= 50, num_leaves= 10, random_state=42) 
 
 
-        models = {
-            'chu_DT': dtc, 
-            'chu_LR': lrc, 
-            'chu_RF': rfc, 
-            'chu_AdaBoost': adc, 
-            'chu_ETC': etc,
-            'chu_GBDT':gbdt,
-            'chu_xgb':xgb,
-            'chu_lgbm':lgbm,
+        # models = {
+        #     'chu_DT': dtc, 
+        #     'chu_LR': lrc, 
+        #     'chu_RF': rfc, 
+        #     'chu_AdaBoost': adc, 
+        #     'chu_ETC': etc,
+        #     'chu_GBDT':gbdt,
+        #     'chu_xgb':xgb,
+        #     'chu_lgbm':lgbm,
 
-        }
-        chu_mod_accuracy = chu.result_table(models, X_train, y_train, X_test, y_test)[["Algorithm", "Accuracy"]]
+        # }
+        # chu_mod_accuracy = chu.result_table(models, X_train, y_train, X_test, y_test)[["Algorithm", "Accuracy"]]
     
 
 
         ### preprocessing new data
         new_df =chu.pre_new_data(df,resp_data)
-        new_df['LeaveOrNot'] = np.nan
+        # new_df['LeaveOrNot'] = np.nan
 
+               ## load fitted model
+        file_path = "mod_obj/"
+        files = []
+        for i in os.listdir(file_path):
+            if i.startswith("Chu_"):
+                files.append(i)
 
-        ### prediction
-        chu_pred_results = pd.merge(chu.new_data_prediction(models, new_df, X_train, y_train, X_test, y_test), chu_mod_accuracy) 
-        return chu_pred_results
+        model_dict = {"Algorithm" : [],
+        "Prediction" : [],
+        "Accuracy" : [],
+        "Weight" : []}  
+
+        for file in files:
+            model_dict["Algorithm"].append(file.split("_0.")[0])
+            model_dict["Accuracy"].append(float(file.split("_")[-1].split(".joblib")[0]))            
+            model = joblib.load(f'{file_path + file}')
+            model_dict["Prediction"].append(int(model.predict(new_df)))
+            model_dict["Weight"].append(0)
+
+        return pd.DataFrame(model_dict)
+
+        # ### prediction
+        # chu_pred_results = pd.merge(chu.new_data_prediction(models, new_df, X_train, y_train, X_test, y_test), chu_mod_accuracy) 
+        # return chu_pred_results
 
     ## Lee's model
     def Lee_predict():
@@ -116,20 +136,34 @@ if st.button("예측하기"):
                 files.append(i)
         
 
-        file_name = files[-1]
-        ohe_name = "ohe.joblib.gz"
-
-        Lee_RF = joblib.load(f'{file_path + file_name}')
+        ## preprocessing new data
+        ohe_name = "ohe.joblib.gz"        
         fitted_ohe = joblib.load(f'{file_path + ohe_name}')
-        Lee_RF_accuracy = float(file_name.split("_")[-1].split(".joblib")[0])
         cat_col = ["Education", "City", "PaymentTier", "Gender", "EverBenched"]
         num_col = resp_data.columns[~resp_data.columns.isin(cat_col)].tolist()
         X_test_ohe = pd.DataFrame(fitted_ohe.transform(resp_data[cat_col]).toarray(), columns = fitted_ohe.get_feature_names_out())
         X_test_ohe[num_col] = resp_data[num_col].copy()
-            
-        y_predict = Lee_RF.predict(X_test_ohe)
-        Lee_pred_results = pd.DataFrame({"Algorithm": ['Lee_RF'], "Prediction": [int(y_predict)], "Accuracy" : [Lee_RF_accuracy], "Weight" : [0]})
-        return Lee_pred_results
+
+        ## load fitted model
+        file_path = "mod_obj/"
+        files = []
+        for i in os.listdir(file_path):
+            if i.startswith("Lee_"):
+                files.append(i)
+
+        model_dict = {"Algorithm" : [],
+        "Prediction" : [],
+        "Accuracy" : [],
+        "Weight" : []}  
+
+        for file in files:
+            model_dict["Algorithm"].append(file.split("_0.")[0])
+            model_dict["Accuracy"].append(float(file.split("_")[-1].split(".joblib")[0]))            
+            model = joblib.load(f'{file_path + file}')
+            model_dict["Prediction"].append(int(model.predict(X_test_ohe)))
+            model_dict["Weight"].append(0)
+
+        return pd.DataFrame(model_dict)
 
     ## Yoon's models
     def Yoon_predict():
@@ -160,8 +194,8 @@ if st.button("예측하기"):
 
 
     ## showing results
-    # Chu_predict(), 
-    model_results = pd.concat([Lee_predict(), Yoon_predict()]).reset_index(drop = True)
+    
+    model_results = pd.concat([Chu_predict(), Lee_predict(), Yoon_predict()]).reset_index(drop = True)
     model_results['Weight']=model_results['Accuracy']/model_results['Accuracy'].sum()
     
     n_models = len(model_results["Algorithm"])
