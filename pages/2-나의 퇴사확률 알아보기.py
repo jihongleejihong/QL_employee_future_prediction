@@ -54,7 +54,9 @@ with col2:
     feature_dict["ExperienceInCurrentDomain"].append(st.slider(feature_kor_dict["ExperienceInCurrentDomain"], 0, 10))
 
 resp_data = pd.DataFrame(feature_dict)
-st.dataframe(resp_data.rename(columns = feature_kor_dict))
+
+st.write("퇴사 확률에 예측에 사용될 변수")
+st.dataframe(resp_data.rename(columns = feature_kor_dict, index = {0: "현재 선택값"}))
 
 
 
