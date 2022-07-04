@@ -63,41 +63,7 @@ st.dataframe(resp_data.rename(columns = feature_kor_dict, index = {0: "현재 �
 if st.button("예측하기"):
     ## chu's model
     def Chu_predict():
-        
-        # X_train, X_test, y_train, y_test= chu.pre_df(df)
-
-        # dtc = DecisionTreeClassifier(criterion= 'gini', max_depth= 8, min_samples_leaf= 4, min_samples_split= 2,random_state=42)
-
-        # lrc = LogisticRegression(random_state=42)
-
-        # rfc = RandomForestClassifier(criterion= 'entropy', max_depth= 8, n_estimators= 500, random_state=42)
-
-        # adc = AdaBoostClassifier(learning_rate = 0.001, n_estimators= 180, random_state=42)
-
-        # etc = ExtraTreesClassifier(criterion= 'gini', n_estimators= 70, random_state=42) 
-
-        # gbdt = GradientBoostingClassifier(learning_rate= 0.1, loss= 'deviance', max_depth= 3, n_estimators= 150, random_state=42)
-
-        # xgb = XGBClassifier(eval_metric= 'mlogloss', learning_rate= 1, n_estimators= 20, random_state=42) 
-
-        # lgbm= LGBMClassifier(learning_rate= 0.1, max_bin= 100, n_estimators= 50, num_leaves= 10, random_state=42) 
-
-
-        # models = {
-        #     'chu_DT': dtc, 
-        #     'chu_LR': lrc, 
-        #     'chu_RF': rfc, 
-        #     'chu_AdaBoost': adc, 
-        #     'chu_ETC': etc,
-        #     'chu_GBDT':gbdt,
-        #     'chu_xgb':xgb,
-        #     'chu_lgbm':lgbm,
-
-        # }
-        # chu_mod_accuracy = chu.result_table(models, X_train, y_train, X_test, y_test)[["Algorithm", "Accuracy"]]
-    
-
-
+         
         ### preprocessing new data
         new_df =chu.pre_new_data(df,resp_data)
         # new_df['LeaveOrNot'] = np.nan
@@ -122,10 +88,6 @@ if st.button("예측하기"):
             model_dict["Weight"].append(0)
 
         return pd.DataFrame(model_dict)
-
-        # ### prediction
-        # chu_pred_results = pd.merge(chu.new_data_prediction(models, new_df, X_train, y_train, X_test, y_test), chu_mod_accuracy) 
-        # return chu_pred_results
 
     ## Lee's model
     def Lee_predict():
@@ -219,7 +181,7 @@ if st.button("예측하기"):
 
     with st.expander("각 모델 예측 결과 확인"):
         st.write(model_results)
-        st.write("Weighted Sum of Prediction = " +
+        st.write("Weighted Average of Predictions = " +
         ' + '.join([f'({p} * {w})' for p, w in zip(model_results["Prediction"], model_results["Weight"])]) +
         f' = {leave_prob:.5f}')
 
