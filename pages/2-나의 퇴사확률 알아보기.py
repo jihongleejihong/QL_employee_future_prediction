@@ -161,7 +161,8 @@ if st.button("예측하기"):
     model_results['Weight']=model_results['Accuracy']/model_results['Accuracy'].sum()
     
     n_models = len(model_results["Algorithm"])
-    leave_prob = np.sum(model_results["Prediction"] * model_results["Weight"])
+    leave_prob = np.dot(model_results["Prediction"], model_results["Weight"])
+#     leave_prob = np.sum(model_results["Prediction"] * model_results["Weight"])
 
     st.subheader(f'{n_models}개의 모델로 예측한 결과,')
     st.metric(label="퇴사 확률은", value= f"{leave_prob * 100:.3f}%")
